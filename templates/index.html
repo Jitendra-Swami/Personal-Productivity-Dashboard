@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Productivty Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+    <h1 id="dashboard-title">My  Productivty Dashboard</h1>
+
+    <p>{{name}}</p>
+
+    <div class="cards">
+        <div class="card">
+        <h2>Today's Goal</h2>
+
+    <p>{{goal}}</p>
+
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar" style="width: {{ percentage }}%;"></div>
+            </div>
+            <p id="productivity">Productivity: {{ percentage }}%</p>
+            <button id="motivateButton">Motivate me</button>
+
+            <p id="motivation"></p>
+    </div>
+
+    <div class="card">
+        <div class="task-header">
+            <h2>Tasks </h2>
+                <span id="task-counter">{{completed}} / {{tasks|length}} completed</span>
+        </div>
+        <p id="api-message"></p>
+    <ul id="api-tasks">
+    {% for task in tasks %}
+        <li class="task-item">
+            <form action="/toggle/{{ task['id'] }}" method="GET">
+    <input type="checkbox"
+        {% if task[ "done" ] %}checked{% endif %}
+        onchange="this.form.submit()"
+    >
+            </form>
+            <span class="{% if task['done'] %}completed{% endif %}">
+                 {{ task["name"] }}
+            </span>
+
+            <span class="priority {{task['priority']}}">
+                {{task["priority"].capitalize()}}
+            </span>
+            <a class="edit-btn" href="/edit/{{task['id']}}">Edit</a>
+            <a class="delete-btn" href="/delete/{{ task['id'] }}">Delete</a>
+        </li>
+    {% endfor %}
+    {% if not tasks %}
+    <p class="empty-message">No tasks yet. Add your first task!</p>
+    {% endif %}
+</ul>
+
+    <form id="task-form" action="/add" method="POST" class="task-form">
+        <input type="text" name="task" placeholder="Enter a new task" maxlength="100" required>
+        
+        <select name="priority" id="">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+
+
+        </select>
+    <button type="submit">Add</button>
+</form>
+
+    </div>
+    
+    <div class="card">
+        <h2>My Skills</h2>
+    <ul>
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>Python</li>
+    </ul></div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
